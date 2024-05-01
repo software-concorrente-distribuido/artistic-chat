@@ -1,3 +1,5 @@
+//trabalho Multi Thread
+
 const { Worker, isMainThread, workerData } = require("worker_threads");
 const { randomInt } = require("crypto");
 
