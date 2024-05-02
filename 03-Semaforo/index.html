@@ -8,10 +8,20 @@
   <body>
     <h1>Aplicação de Semáforo</h1>
     <button onclick="distribuirTicket()">Distribuir Ticket</button>
+    <button onclick="processarSemafaro()">Processar Semáforo</button>
 
     <script>
       function distribuirTicket() {
         fetch("http://localhost:3000/distribuir-ticket")
+          .then((response) => response.text())
+          .then((data) => {
+            console.log(data);
+            document.body.innerHTML += data;
+          })
+          .catch((error) => console.error("Erro:", error));
+      }
+      function processarSemafaro() {
+        fetch("http://localhost:3000/processar-semaforo")
           .then((response) => response.text())
           .then((data) => {
             console.log(data);

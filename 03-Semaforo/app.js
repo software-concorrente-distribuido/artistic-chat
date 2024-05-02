@@ -3,14 +3,30 @@ const http = require("http");
 class Ticket {
   constructor(numero) {
     this.numero = numero;
-    this.processado = false;
     this.tempoProcessamento = Math.floor(Math.random() * 5) + 1;
   }
 }
 
-let semaphore = 1; // Semáforo começa em verde (1 para livre, 0 para ocupado)
 let ticketNumber = 1;
 let fila = [];
+let processando = false; // Flag para controlar se há processamento em andamento
+
+function processarProximoTicket() {
+  if (fila.length > 0 && !processando) {
+    processando = true;
+    const nextTicket = fila.shift();
+
+    console.log(
+      `Ticket ${nextTicket.numero} processando. Espere ${nextTicket.tempoProcessamento} segundos.`
+    );
+
+    setTimeout(() => {
+      console.log(`Ticket ${nextTicket.numero} concluído.`);
+      processando = false; // Marca como concluído para processar o próximo ticket
+      processarProximoTicket(); // Chama a função recursivamente para processar o próximo ticket
+    }, nextTicket.tempoProcessamento * 1000);
+  }
+}
 
 const server = http.createServer((req, res) => {
   res.writeHead(200, { "Content-Type": "text/html" });
@@ -22,36 +38,16 @@ const server = http.createServer((req, res) => {
     );
     ticketNumber++;
 
-    if (semaphore === 1) {
-      semaphore = 0;
-      console.log(
-        `Ticket ${ticket.numero} processando. Espere ${ticket.tempoProcessamento} segundos.`
-      );
+    console.log(`Ticket ${ticket.numero} adicionado na fila.`);
 
-      do {
-        setTimeout(() => {
-          console.log(`Ticket ${ticket.numero} concluído.`);
-          ticket.processado = true;
-          semaphore = 1;
-          if (fila.length > 0) {
-            const nextTicket = fila.shift();
-            console.log(
-              `Ticket ${nextTicket.numero} processando. Espere ${nextTicket.tempoProcessamento} segundos.`
-            );
-            setTimeout(() => {
-              console.log(`Ticket ${nextTicket.numero} concluído.`);
-              nextTicket.processado = true;
-            }, nextTicket.tempoProcessamento * 1000);
-          }
-        }, ticket.tempoProcessamento * 1000);
-      } while (fila.length > 0);
-
-      res.write(`<p>Ticket ${ticket.numero} distribuído. Aguarde...</p>`);
+    fila.push(ticket);
+    res.write(`<p>Ticket ${ticket.numero} adicionado na fila. Aguarde...</p>`);
+  } else if (req.url === "/processar-semaforo") {
+    if (fila.length > 0 && !processando) {
+      processarProximoTicket();
     } else {
-      console.log(`Ticket ${ticket.numero} adicionado na fila.`);
-      fila.push(ticket);
-      res.write(
-        `<p>Ticket ${ticket.numero} adicionado na fila. Aguarde...</p>`
+      console.log(
+        "Não há tickets na fila ou um processo já está em andamento."
       );
     }
   } else {
