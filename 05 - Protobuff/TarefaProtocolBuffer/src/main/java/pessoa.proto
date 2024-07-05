@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package tarefaprotocol;
+
+option java_multiple_files = true;
+option java_package = "com.example.tarefaprotocl.protos";
+option java_outer_classname = "PessoaProtos";
+
+message Pessoa {
+  string nome = 1;
+  int32 idade = 2;
+
+  enum TipoSangioneo {
+    TIPO_SANGUINEO_NAOESPECIFICADO = 0;
+    TIPO_SANGUINEO_AP = 1;
+    TIPO_SANGUINEO_AN = 2;
+    TIPO_SANGUINEO_BP = 3;
+    TIPO_SANGUINEO_BN = 4;
+    TIPO_SANGUINEO_OP = 5;
+    TIPO_SANGUINEO_ON = 6;
+    TIPO_SANGUINEO_ABP = 7;
+    TIPO_SANGUINEO_ABN = 8;
+    TIPO_SANGUINEO_NULL = 9;
+  }
+
+  TipoSangioneo type = 3;
+}
+
+message ListaPessoas {
+  repeated Pessoa pessoas = 1;
+}
