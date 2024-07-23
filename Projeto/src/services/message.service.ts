@@ -1,10 +1,7 @@
-import { bot } from '../app';
-import * as telegramService from './telegram.service';
 import * as gameService from './game.service';
+import * as telegramService from './telegram.service';
 import * as userRepo from '../repositories/user.repo';
 import * as gameRepo from '../repositories/game.repo';
-import * as questionRepo from '../repositories/question.repo';
-import { IUser } from '../models/user.model';
 
 export const messageRecived = async (msg: any) => {
   const message = msg.text;
@@ -116,13 +113,13 @@ export const messageRecived = async (msg: any) => {
         await userRepo.cancelGame(game.user2);
         return;
       }
-
+      await gameService.sendCurrentPoints(game);
       await gameService.sendQuestion(game);
       return;
     }
 
     if (message !== game.awnswer) {
-      telegramService.sendMessage(
+      await telegramService.sendMessage(
         chatId,
         'Resposta incorreta! Aguarde o próximo jogador!'
       );
@@ -134,7 +131,7 @@ export const messageRecived = async (msg: any) => {
       } else {
         game.user2trie = true;
       }
-      gameRepo.update(game);
+      await gameRepo.update(game);
       if (game.user1trie && game.user2trie) {
         telegramService.sendMessage(
           chatId1,
@@ -148,6 +145,7 @@ export const messageRecived = async (msg: any) => {
         game.user1trie = false;
         game.user2trie = false;
         await gameRepo.update(game);
+        await gameService.sendCurrentPoints(game);
         await gameService.sendQuestion(game);
         return;
       }

@@ -2,8 +2,6 @@ import * as questionRepo from '../repositories/question.repo';
 import * as gameRepo from '../repositories/game.repo';
 import * as userRepo from '../repositories/user.repo';
 import * as telegramService from './telegram.service';
-import { IQuestion } from '../models/question.model';
-import { IGame } from '../models/game.model';
 
 export const startGame = async (user: any) => {
   const lastGame = await gameRepo.getTheLastGame();
@@ -81,6 +79,31 @@ export const sendQuestion = async (game: any) => {
 
   const sent1 = telegramService.sendMessage(user1.chatId, message, options);
   const sent2 = telegramService.sendMessage(user2.chatId, message, options);
+
+  return { sent1, sent2 };
+};
+
+export const sendCurrentPoints = async (game: any) => {
+  const user1 = await userRepo.getOneById(game.user1);
+  if (!user1) {
+    throw new Error('Usuário não encontrado');
+  }
+
+  const user2 = await userRepo.getOneById(game.user2);
+  if (!user2) {
+    throw new Error('Usuário não encontrado');
+  }
+
+  const message1 = `Pontuação atual: ${game?.points1 || 0} X ${
+    game?.points2 || 0
+  }`;
+
+  const message2 = `Pontuação atual: ${game?.points2 || 0} X ${
+    game?.points1 || 0
+  }`;
+
+  const sent1 = telegramService.sendMessage(user1.chatId, message1);
+  const sent2 = telegramService.sendMessage(user2.chatId, message2);
 
   return { sent1, sent2 };
 };
