@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  bot:
+    build: .
+    restart: on-failure
+    container_name: artistic-trivia-telegram-bot
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      - PORT=${PORT}
+      - NODE_ENV=production
+      - TZ=America/Sao_Paulo
+      - MONGO_URI=${MONGO_URI}
+      - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
