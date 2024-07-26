@@ -16,6 +16,7 @@ export const startGame = async (user: any) => {
     };
     const game = await gameRepo.create(newGame);
     user.activeGame = game._id;
+    user.lastGame = game._id;
     await userRepo.update(user);
     const message =
       'Aguarde o próximo jogador! Ou digite /cancelar para cancelar o jogo!';
@@ -73,6 +74,7 @@ export const sendQuestion = async (game: any) => {
   };
 
   game.awnswer = question[0].correct_answer;
+  game.answers = alternatives;
   await gameRepo.update(game);
 
   const message = `Pergunta: ${question[0].question}`;

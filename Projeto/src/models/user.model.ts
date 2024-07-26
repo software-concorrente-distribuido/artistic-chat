@@ -1,4 +1,4 @@
-import mongoose, { Document, Mixed, Schema } from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IUser extends Document {
   chatId: number;
@@ -7,6 +7,7 @@ export interface IUser extends Document {
   languageCode: string;
   isBot: boolean;
   activeGame: string;
+  lastGame: string;
 }
 
 const userSchema = new Schema({
@@ -16,6 +17,7 @@ const userSchema = new Schema({
   languageCode: { type: String, required: true },
   isBot: { type: Boolean, required: true },
   activeGame: { type: Schema.Types.ObjectId, ref: 'game' },
+  lastGame: { type: Schema.Types.ObjectId, ref: 'game' },
 });
 
 export default mongoose.model<IUser>('user', userSchema);
